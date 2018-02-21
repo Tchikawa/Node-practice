@@ -1,15 +1,20 @@
 const http = require('http');
+const fs = require('fs');
 
-var server = http.createServer((request, response) => {
-  response.setHeader('Content-Type', 'text/html');
-  response.write('<!DOTYPE html><html lang="ja">');
-  response.write('<head><meta charset="utf-8">');
-  response.write('<title>Hello</title></head>');
-  response.write('<body><h1>Hello Node.js!</h1>');
-  response.write('<p>This is Node.js sample page.</p>');
-  response.write('<p>これは、Node.jsのサンプルページです。</p>', 'utf-8');
-  response.write('</body></html>');
-  response.end();
-});
+var server = http.createServer(getFromClient);
 server.listen(3000);
 console.log('server start!');
+
+function getFromClient(req, res) {
+  request = req;
+  response = res;
+
+  fs.readFile('./index.html', 'UTF-8', (error, data) => {
+    var content = data
+      .replace(/dummy_title/g, 'タイトル')
+      .replace(/dummy_content/g, 'コンテンツ');
+    response.writeHead(200, { 'Content-Type': 'text/html' });
+    response.write(content);
+    response.end();
+  });
+}
