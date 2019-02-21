@@ -7,7 +7,7 @@ app.engine('ejs', ejs.renderFile);
 
 app.get('/', (req, res) => {
   //レンダリング
-  res.render('index.ejs', {
+  res.render('index_4-4.ejs', {
     title: 'INDEX',
     content: 'This is Express-app !',
   });

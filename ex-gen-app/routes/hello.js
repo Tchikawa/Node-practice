@@ -1,12 +1,28 @@
-var express = require('express');
-var router = express.Router();
+   var express = require('express');
+   var router = express.Router();
+   var http = require('https');
+   var parseString = require('xml2js').parseString;
 
-router.get('/', (req, res, next) => {
-  var data = {
-    title : 'Hello!',
-    content : 'これはサンプルのコンテンツです。<br>this is sample content.'
-  };
-  res.render('hello', data);
-});
+   /* GET hpme page. */
+   router.get('/', (req, res, next) => {
+     var msg = '※何か書いて送信してください';
+     if (req.session.message != undefined) {
+       msg = 'Last Message: ' + req.session.message;
+     }
+    var data = {
+      title: 'Hello!',
+      content: msg
+    };
+    res.render('hello', data);
+  })
 
-module.express = router;
+  router.post('/post', (req, res, next) => {
+    var msg = req.body['message']
+    req.session.message = msg;
+    var data = {
+      title: 'Hello!',
+      content: 'Last Message: ' + req.session.message
+    };
+    res.render('hello', data);
+  })
+   module.exports = router;

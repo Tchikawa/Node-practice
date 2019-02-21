@@ -1,48 +1,41 @@
-//必要なモジュールのロード
-//express本体
+var createError = require('http-errors');
 var express = require('express');
-//ファイルパスを扱うためのモジュール
 var path = require('path');
-//favicon利用のモジュール
-var favicon = require('serve-favicon');
-//httpリクエストのlog出力に関するモジュール
-var logger = require('morgan');
-//クッキーのパースに関するモジュール
 var cookieParser = require('cookie-parser');
-//送信データをパース処理
-var bodyParser = require('body-parser');
-//ルート用スクリプトのロード
-var index = require('./routes/index');
-var users = require('./routes/users');
+var logger = require('morgan');
+var session = require('express-session');
+
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
 var hello = require('./routes/hello');
 
 var app = express();
 
 // view engine setup
-//views:テンプレートファイルが保管される場所
-//views engine:テンプレートエンジンの種類
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-//アプリケーションにアクセスした際に実行される関数を設定
-//基本的な処理が行われるようになってる
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-//'/'にindex、'/users'にusersを割り当て
-app.use('/', index);
-app.use('/users', users);
-app.use('/hello', hello);
+
+var session_opt = {
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {maxAge: 60 * 60 * 1000}
+}
+
+app.use(session(session_opt));
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/hello', hello)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+  next(createError(404));
 });
 
 // error handler
@@ -56,5 +49,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-//外部からのアクセス用
 module.exports = app;

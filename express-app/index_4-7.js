@@ -10,7 +10,7 @@ app.use(express.static('public')); //★追記
 
 app.get('/', (req, res) => {
   var msg = 'This is Express Page!<br>これは、スタイルシートを利用した例です。';
-  res.render('index.ejs', { title: 'Index', content: msg });
+  res.render('index_4-4.ejs', { title: 'Index', content: msg });
 });
 
 var server = app.listen(3000, () => {
