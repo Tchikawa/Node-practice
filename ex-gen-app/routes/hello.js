@@ -2,27 +2,27 @@
    var router = express.Router();
    var http = require('https');
    var parseString = require('xml2js').parseString;
+   var sqlite3 = require('sqlite3');
 
-   /* GET hpme page. */
+   //DBオブジェクトの取得
+   var db = new sqlite3.Database('mydb.sqlite3');
+
+   // DBアクセスの処理
    router.get('/', (req, res, next) => {
-     var msg = '※何か書いて送信してください';
-     if (req.session.message != undefined) {
-       msg = 'Last Message: ' + req.session.message;
-     }
-    var data = {
-      title: 'Hello!',
-      content: msg
-    };
-    res.render('hello', data);
-  })
+     // データベースのシリアライズ
+     db.serialize(() => {
+       // レコードを全て取り出し
+       db.all('select * from mydata', (err, rows) => {
+         // データベースアクセス完了時の処理
+         if (!err) {
+           var data = {
+             title: 'Hello!',
+             content: rows
+           };
+           res.render('hello', data);
+         }
+       })
+     })
+   });
 
-  router.post('/post', (req, res, next) => {
-    var msg = req.body['message']
-    req.session.message = msg;
-    var data = {
-      title: 'Hello!',
-      content: 'Last Message: ' + req.session.message
-    };
-    res.render('hello', data);
-  })
    module.exports = router;
